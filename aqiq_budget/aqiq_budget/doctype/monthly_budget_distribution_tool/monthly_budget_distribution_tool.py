@@ -65,60 +65,131 @@ def create_budget(name):
     for account, percentages_list in grouped_percentages.items():       
         # if account not in account_per:
         distribution_id=f"{doc.fiscal_year}-{account.replace(' ', '-')}"
-        if doc.budget_against == 'Project':
-            new_monthly_distribution_doc = frappe.get_doc({
-                'doctype': 'Monthly Distribution',
-                'distribution_id': distribution_id,
-                'fiscal_year': doc.fiscal_year,
-                'account': account,
-                'percentages': percentages_list,
-            })
-            print(new_monthly_distribution_doc)
+        if doc.applicable_on_material_request==1:
             
-            new_budget_doc = frappe.get_doc({
-                'doctype': 'Budget',
-                'budget_against': doc.budget_against,
-                'company': doc.company,
-                'project': doc.project,
-                'monthly_distribution':distribution_id,
-                'applicable_on_material_request': doc.applicable_on_material_request,
-                'applicable_on_purchase_order': doc.applicable_on_purchase_order,
-                'Applicable on booking actual expenses':doc.applicable_on_booking_actual_expenses,
-                'fiscal_year': doc.fiscal_year,
-                'accounts': [{'account': account, 'budget_amount': total_amount}],
-            })
-        elif doc.budget_against == 'Cost Center':
-            new_monthly_distribution_doc = frappe.get_doc({
-                'doctype': 'Monthly Distribution',
-                'distribution_id': distribution_id,
-                'fiscal_year': doc.fiscal_year,
-                'account': account,
-                'percentages': percentages_list,
-            })
-            
-            new_budget_doc = frappe.get_doc({
-                'doctype': 'Budget',
-                'budget_against': doc.budget_against,
-                'company': doc.company,
-                'cost_center': doc.cost_center,
-                'monthly_distribution':distribution_id,
-                'applicable_on_material_request': doc.applicable_on_material_request,
-                'applicable_on_purchase_order': doc.applicable_on_purchase_order,
-                'fiscal_year': doc.fiscal_year,
-                'accounts': [{'account': account, 'budget_amount': total_amount}],
-            })
+            if doc.budget_against == 'Project':
+                new_monthly_distribution_doc = frappe.get_doc({
+                    'doctype': 'Monthly Distribution',
+                    'distribution_id': distribution_id,
+                    'fiscal_year': doc.fiscal_year,
+                    'account': account,
+                    'percentages': percentages_list,
+                })
+                print(new_monthly_distribution_doc)
+                
+                new_budget_doc = frappe.get_doc({
+                    'doctype': 'Budget',
+                    'budget_against': doc.budget_against,
+                    'company': doc.company,
+                    'project': doc.project,
+                    'monthly_distribution':distribution_id,
+                    'applicable_on_material_request': doc.applicable_on_material_request,
+                    'action_if_annual_budget_exceeded_on_mr':doc.action_if_annual_budget_exceeded_on_mr,
+                    'action_if_accumulated_monthly_budget_exceeded_on_mr':doc.action_if_accumulated_monthly_budget_exceeded_on_mr,
+                    'applicable_on_purchase_order': doc.applicable_on_purchase_order,
+                    'action_if_annual_budget_exceeded_on_po':doc.action_if_annual_budget_exceeded_on_po,
+                    'action_if_accumulated_monthly_budget_exceeded_on_po':doc.action_if_accumulated_monthly_budget_exceeded_on_po,
+                    'applicable_on_booking_actual_expenses':doc.applicable_on_booking_actual_expenses,
+                    'action_if_annual_budget_exceeded_on_actual':doc.action_if_annual_budget_exceeded_on_actual,
+                    'action_if_accumulated_monthly_budget_exceeded_on_actual':doc.action_if_accumulated_monthly_budget_exceeded_on_actual,
+                    'fiscal_year': doc.fiscal_year,
+                    'accounts': [{'account': account, 'budget_amount': total_amount}],
+                })
+            elif doc.budget_against == 'Cost Center':
+                new_monthly_distribution_doc = frappe.get_doc({
+                    'doctype': 'Monthly Distribution',
+                    'distribution_id': distribution_id,
+                    'fiscal_year': doc.fiscal_year,
+                    'account': account,
+                    'percentages': percentages_list,
+                })
+                
+                new_budget_doc = frappe.get_doc({
+                    'doctype': 'Budget',
+                    'budget_against': doc.budget_against,
+                    'company': doc.company,
+                    'cost_center': doc.cost_center,
+                    'monthly_distribution':distribution_id,
+                    'applicable_on_material_request': doc.applicable_on_material_request,
+                    'action_if_annual_budget_exceeded_on_mr':doc.action_if_annual_budget_exceeded_on_mr,
+                    'action_if_accumulated_monthly_budget_exceeded_on_mr':doc.action_if_accumulated_monthly_budget_exceeded_on_mr,
+                    'applicable_on_purchase_order': doc.applicable_on_purchase_order,
+                    'action_if_annual_budget_exceeded_on_po':doc.action_if_annual_budget_exceeded_on_po,
+                    'action_if_accumulated_monthly_budget_exceeded_on_po':doc.action_if_accumulated_monthly_budget_exceeded_on_po,
+                    'applicable_on_booking_actual_expenses':doc.applicable_on_booking_actual_expenses,
+                    'action_if_annual_budget_exceeded_on_actual':doc.action_if_annual_budget_exceeded_on_actual,
+                    'action_if_accumulated_monthly_budget_exceeded_on_actual':doc.action_if_accumulated_monthly_budget_exceeded_on_actual,
+                    'fiscal_year': doc.fiscal_year,
+                    'accounts': [{'account': account, 'budget_amount': total_amount}],
+                })
+            else:
+                pass
+            if frappe.db.exists("Monthly Distribution", {"name": distribution_id}):
+                pass
+            else:
+                print(new_monthly_distribution_doc)
+                new_monthly_distribution_doc.insert()
+                new_budget_doc.insert()
+                frappe.db.commit()
+                # account_per.add(account)
+                frappe.db.commit()
+            # print(account_per)
+        
         else:
-            pass
-        if frappe.db.exists("Monthly Distribution", {"name": distribution_id}):
-            pass
-        else:
-            print(new_monthly_distribution_doc)
-            new_monthly_distribution_doc.insert()
-            new_budget_doc.insert()
-            frappe.db.commit()
-            # account_per.add(account)
-            frappe.db.commit()
-        # print(account_per)
+            if doc.budget_against == 'Project':
+                new_monthly_distribution_doc = frappe.get_doc({
+                    'doctype': 'Monthly Distribution',
+                    'distribution_id': distribution_id,
+                    'fiscal_year': doc.fiscal_year,
+                    'account': account,
+                    'percentages': percentages_list,
+                })
+                print(new_monthly_distribution_doc)
+                
+                new_budget_doc = frappe.get_doc({
+                    'doctype': 'Budget',
+                    'budget_against': doc.budget_against,
+                    'company': doc.company,
+                    'project': doc.project,
+                    'monthly_distribution':distribution_id,
+                    'applicable_on_material_request': doc.applicable_on_material_request,
+                    'applicable_on_purchase_order': doc.applicable_on_purchase_order,
+                    'Applicable on booking actual expenses':doc.applicable_on_booking_actual_expenses,
+                    'fiscal_year': doc.fiscal_year,
+                    'accounts': [{'account': account, 'budget_amount': total_amount}],
+                })
+            elif doc.budget_against == 'Cost Center':
+                new_monthly_distribution_doc = frappe.get_doc({
+                    'doctype': 'Monthly Distribution',
+                    'distribution_id': distribution_id,
+                    'fiscal_year': doc.fiscal_year,
+                    'account': account,
+                    'percentages': percentages_list,
+                })
+                
+                new_budget_doc = frappe.get_doc({
+                    'doctype': 'Budget',
+                    'budget_against': doc.budget_against,
+                    'company': doc.company,
+                    'cost_center': doc.cost_center,
+                    'monthly_distribution':distribution_id,
+                    'applicable_on_material_request': doc.applicable_on_material_request,
+                    'applicable_on_purchase_order': doc.applicable_on_purchase_order,
+                    'fiscal_year': doc.fiscal_year,
+                    'accounts': [{'account': account, 'budget_amount': total_amount}],
+                })
+            else:
+                pass
+            if frappe.db.exists("Monthly Distribution", {"name": distribution_id}):
+                pass
+            else:
+                print(new_monthly_distribution_doc)
+                new_monthly_distribution_doc.insert()
+                new_budget_doc.insert()
+                frappe.db.commit()
+                # account_per.add(account)
+                frappe.db.commit()
+            # print(account_per)
 @frappe.whitelist()
 def test():
     account
