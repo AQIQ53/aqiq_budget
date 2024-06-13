@@ -1,10 +1,19 @@
 import frappe
 from frappe.model.document import Document
 from collections import defaultdict
+import time
+import random
 
 class MonthlyBudgetDistributionTool(Document):
     pass
 
+
+
+def generate_unique_value():
+    timestamp = int(time.time() * 1000)  # current timestamp in milliseconds
+    random_number = random.randint(1, 1000)  # generate a random number
+    unique_value = f"{timestamp}-{random_number}"
+    return unique_value
 def sort_months(months):
     # List of months in their natural order
     natural_order = [
@@ -45,9 +54,11 @@ def create_budget(name):
 
     # Create Monthly Distribution and Budget documents
     for fiscal_year, months in periods_by_year.items():
-        distribution_id = f"{fiscal_year}-monthly-distribution"
+        
 
         for t in doc.monthly_budget_distribution_table:
+            unique_value = generate_unique_value()
+            distribution_id = f"{fiscal_year}-monthly-distribution-{unique_value}"
             # Filter months to only include periods relevant to the fiscal year
             filtered_months = [month for month in months if getattr(t, month.lower(), 0)]
 
