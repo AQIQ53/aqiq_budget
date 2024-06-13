@@ -220,5 +220,6 @@ app_license = "mit"
 #	"aqiq_budget.auth.validate"
 # ]
 fixtures = [
-    "Client Script"
+    "Client Script",
+    "Custom Field",
 ]

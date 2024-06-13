@@ -80,6 +80,7 @@ def create_budget(name):
                         'fiscal_year': fiscal_year,
                         'account': t.account,
                         'percentages': percentages,
+                        'custom_connect':name
                     })
                     new_budget_doc = frappe.get_doc({
                         'doctype': 'Budget',
@@ -114,6 +115,7 @@ def create_budget(name):
                         'fiscal_year': fiscal_year,
                         'account': t.account,
                         'percentages': percentages,
+                        'custom_connect':name
                     })
                     new_budget_doc = frappe.get_doc({
                         'doctype': 'Budget',
@@ -137,17 +139,28 @@ def create_budget(name):
                         frappe.db.commit()
 
 
-
 @frappe.whitelist()
-def test():
-    account
-    new_monthly_distribution_doc = frappe.get_doc({
-            'doctype': 'Monthly Distribution',
-            'distribution_id': distribution_id,
-            'fiscal_year': entry['fiscal_year'],
-            'account': account,
-            'percentages': percentages_list,
-        })
+def cancel_budget(name):
+    try:
+        name_monthly=frappe.db.sql(f"""SELECT name From `tabMonthly Distribution` where custom_connect='{name}'""")
+        for t in name_monthly:
+            frappe.db.sql("""
+                DELETE FROM
+                    `tabBudget`
+                WHERE
+                    monthly_distribution = %s
+            """, (t[0]))
+            frappe.db.commit()
+        frappe.db.sql("""
+            DELETE FROM
+                `tabMonthly Distribution`
+            WHERE
+                custom_connect = %s
+        """, (name))
+        frappe.db.commit()
+        return "Budget and Monthly Distribution Deleted successfully."
+    except Exception as e:
+        return f"Error Deleting Budget and Monthly Distribution: {str(e)}"
 
 
         
