@@ -1,5 +1,4 @@
 import frappe
-from frappe.model.document import Document
 from frappe import _
 
 @frappe.whitelist(allow_guest=True)
