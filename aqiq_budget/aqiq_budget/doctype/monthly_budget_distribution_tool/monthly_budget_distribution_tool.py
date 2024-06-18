@@ -169,6 +169,3 @@ def cancel_budget(name):
 def get_period(name):
     period=frappe.db.sql(f"""SELECT period from `tabMonthly Distribution Map Table` where parent='{name}'""")
     return period
-
-def test():
-    pass
