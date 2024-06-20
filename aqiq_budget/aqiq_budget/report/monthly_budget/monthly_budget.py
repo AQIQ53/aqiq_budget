@@ -18,10 +18,13 @@ def get_data_budget(filters,condition):
             b.monthly_distribution,
             ba.budget_amount,
             mdp.month,
-            mdp.percentage_allocation
+            mdp.percentage_allocation,
+            md.custom_connect
         FROM `tabBudget` b 
         INNER JOIN `tabBudget Account` ba ON b.name = ba.parent 
         INNER JOIN `tabMonthly Distribution Percentage` mdp ON b.monthly_distribution = mdp.parent
+        INNER JOIN `tabMonthly Distribution` md ON b.monthly_distribution = md.name
+        INNER JOIN `tabMonthly Budget Distribution Tool` mbdt ON md.custom_connect = mbdt.name
         WHERE b.docstatus = 1 and 1=1 %s
     """% (condition), as_dict=True)
     data_dict = {}
@@ -58,6 +61,8 @@ def get_condition(filters):
         conditions += " and ba.account='{}'".format(filters.get("account"))
     if filters.get("fiscal_year"):
         conditions += " and b.fiscal_year='{}'".format(filters.get("fiscal_year"))
+    if filters.get("monthly_distribution_template"):
+        conditions += " and mbdt.monthly_distribution_template='{}'".format(filters.get("monthly_distribution_template"))
     return conditions
 
 def get_column():
