@@ -16,6 +16,13 @@ frappe.query_reports["Monthly Budget"] = {
             'label': 'Fiscal Year',
 			'options': 'Fiscal Year',
             'width': 180,
+        },
+        {
+            'fieldname': 'monthly_distribution_template',
+            'fieldtype': 'Link',
+            'label': 'Monthly Distribution Template',
+			'options': 'Monthly Distribution Mapping',
+            'width': 180,
         }
 	]
 };
