@@ -1,7 +1,7 @@
 {
  "actions": [],
  "allow_rename": 1,
- "autoname": "format:Monthly Budget Distribution Tool-{###}",
+ "autoname": "format:Budget Tool-{###}",
  "creation": "2024-06-03 10:57:34.733657",
  "doctype": "DocType",
  "engine": "InnoDB",
@@ -13,6 +13,7 @@
   "fiscal_year",
   "column_break_nwzr",
   "monthly_distribution_template",
+  "section",
   "control_action_section",
   "applicable_on_material_request",
   "action_if_annual_budget_exceeded_on_mr",
@@ -111,7 +112,7 @@
    "fieldtype": "Link",
    "label": "Amended From",
    "no_copy": 1,
-   "options": "Monthly Budget Distribution Tool",
+   "options": "Budget Tool",
    "print_hide": 1,
    "read_only": 1,
    "search_index": 1
@@ -173,6 +174,14 @@
    "fieldtype": "Select",
    "label": "Action if Accumulated Monthly Budget Exceeded on Actual",
    "options": "\nStop\nWarn\nIgnore"
+  },
+  {
+   "depends_on": "eval:doc.budget_against == 'Cost Center'",
+   "fieldname": "section",
+   "fieldtype": "Link",
+   "label": "Section",
+   "options": "Section",
+   "read_only": 1
   }
  ],
  "index_web_pages_for_search": 1,
@@ -183,10 +192,10 @@
    "link_fieldname": "custom_connect"
   }
  ],
- "modified": "2024-06-13 09:58:22.615081",
+ "modified": "2024-06-26 10:24:58.547681",
  "modified_by": "Administrator",
  "module": "Aqiq Budget",
- "name": "Monthly Budget Distribution Tool",
+ "name": "Budget Tool",
  "naming_rule": "Expression",
  "owner": "Administrator",
  "permissions": [

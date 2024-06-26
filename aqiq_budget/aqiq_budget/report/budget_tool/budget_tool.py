@@ -12,57 +12,40 @@ def execute(filters=None):
 def get_data_budget(filters,condition):
     raw_data = frappe.db.sql("""
         SELECT 
-            ba.account,
-            b.fiscal_year,
-            b.name AS budget_name,
-            b.monthly_distribution,
-            ba.budget_amount,
-            mdp.month,
-            mdp.percentage_allocation,
-            md.custom_connect
-        FROM `tabBudget` b 
-        INNER JOIN `tabBudget Account` ba ON b.name = ba.parent 
-        INNER JOIN `tabMonthly Distribution Percentage` mdp ON b.monthly_distribution = mdp.parent
-        INNER JOIN `tabMonthly Distribution` md ON b.monthly_distribution = md.name
-        INNER JOIN `tabBudget Tool` mbdt ON md.custom_connect = mbdt.name
-        WHERE b.docstatus = 1 and 1=1 %s
-    """% (condition), as_dict=True)
-    data_dict = {}
-    for row in raw_data:
-        account = row['account']
-        month = row['month'].lower()
-        budget_amount = row['budget_amount']
-        percentage_allocation = row['percentage_allocation'] / 100
-        
-        if account not in data_dict:
-            data_dict[account] = {
-                'account': account,
-                'august': 0,
-                'september': 0,
-                'october': 0,
-                'november': 0,
-                'december': 0,
-                'january': 0,
-                'february': 0,
-                'march': 0,
-                'april': 0,
-                'may': 0,
-                'june': 0,
-                'july': 0
-            }
-        data_dict[account][month] += budget_amount * percentage_allocation
-    
-    data = list(data_dict.values())
+            mbdt.account,
+            bt.name,
+            bt.monthly_distribution_template,
+            mbdt.august,
+            mbdt.september,
+            mbdt.october,
+            mbdt.november,
+            mbdt.december,
+            mbdt.january,
+            mbdt.february,
+            mbdt.march,
+            mbdt.april,
+            mbdt.may,
+            mbdt.june,
+            mbdt.july,
+            mbdt.total_amount
+        FROM `tabBudget Tool` bt
+        INNER JOIN `tabMonthly Budget Distribution Table` mbdt ON bt.name = mbdt.parent
+        WHERE bt.docstatus != 2 and 1=1 %s
+    """% (condition), as_dict=True)    
+    data = raw_data
     return data
 
 def get_condition(filters):
     conditions = ""
     if filters.get("account"):
-        conditions += " and ba.account='{}'".format(filters.get("account"))
-    if filters.get("fiscal_year"):
-        conditions += " and b.fiscal_year='{}'".format(filters.get("fiscal_year"))
+        conditions += " and mbdt.account='{}'".format(filters.get("account"))
+    if filters.get("docstatus"):
+        if filters.get("docstatus")=='Draft':
+            conditions += " and bt.docstatus='{}'".format('0')
+        else:
+            conditions += " and bt.docstatus='{}'".format('1')
     if filters.get("monthly_distribution_template"):
-        conditions += " and mbdt.monthly_distribution_template='{}'".format(filters.get("monthly_distribution_template"))
+        conditions += " and bt.monthly_distribution_template='{}'".format(filters.get("monthly_distribution_template"))
     return conditions
 
 def get_column():
@@ -143,6 +126,12 @@ def get_column():
             'fieldname': 'july',
             'fieldtype': 'Currency',
             'label': 'July',
+            'width': 150,
+        },
+        {
+            'fieldname': 'total_amount',
+            'fieldtype': 'Currency',
+            'label': 'Total Amount',
             'width': 150,
         }
     ]

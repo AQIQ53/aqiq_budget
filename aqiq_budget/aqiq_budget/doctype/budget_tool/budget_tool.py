@@ -4,7 +4,7 @@ from collections import defaultdict
 import time
 import random
 
-class MonthlyBudgetDistributionTool(Document):
+class BudgetTool(Document):
     pass
 
 
@@ -31,7 +31,7 @@ def sort_months(months):
 
 @frappe.whitelist(allow_guest=True)
 def create_budget(name):
-    doc = frappe.get_doc('Monthly Budget Distribution Tool', name)
+    doc = frappe.get_doc('Budget Tool', name)
     
     period = frappe.db.sql(f"""SELECT period, fiscal_year FROM `tabMonthly Distribution Map Table` WHERE parent='{doc.monthly_distribution_template}'""", as_dict=True)
 
@@ -132,6 +132,7 @@ def create_budget(name):
                         new_budget_doc.project = doc.project
                     elif doc.budget_against == 'Cost Center':
                         new_budget_doc.cost_center = doc.cost_center
+                        new_budget_doc.custom_section=doc.section
                     if not frappe.db.exists("Monthly Distribution", {"name": distribution_id}):
                         new_monthly_distribution_doc.insert()
                         new_budget_doc.insert()
